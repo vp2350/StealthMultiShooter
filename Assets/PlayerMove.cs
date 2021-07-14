@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
+[RequireComponent(typeof(PhotonView))]
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] Rigidbody2D rb;
@@ -11,21 +13,35 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] [Range(1, 200)] float accelerationpercent = 110f;
     float acceleration, speed;
     Vector2 move;
+    private PhotonView photonView;
 
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         acceleration = (accelerationpercent / 100f) * maxWalkSpeed;
         GetComponents();
     }
 
     void Update()
     {
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         RotateSprite();
         UpdateMoveControls();
     }
 
     private void FixedUpdate()
     {
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         UpdateMove();
     }
 
