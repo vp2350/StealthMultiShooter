@@ -7,6 +7,7 @@ using Photon.Pun;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] Rigidbody2D rb;
+    [SerializeField] GameObject[] lightmasks;
 
     [SerializeField] [Range(5, 50)] float maxWalkSpeed = 150f;
     [SerializeField] bool accelerationEnabled = true;
@@ -20,6 +21,10 @@ public class PlayerMove : MonoBehaviour
         photonView = GetComponent<PhotonView>();
         if(!photonView.IsMine)
         {
+            foreach(GameObject lightmask in lightmasks)
+            {
+                lightmask.SetActive(false);
+            }
             return;
         }
         acceleration = (accelerationpercent / 100f) * maxWalkSpeed;

@@ -293,6 +293,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 7359502588888782566}
+  lightmasks:
+  - {fileID: 3504201036668487237}
+  - {fileID: 4954355487099404049}
   maxWalkSpeed: 5
   accelerationEnabled: 1
   accelerationpercent: 110
