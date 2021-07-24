@@ -15,6 +15,12 @@ public class PlayerMove : MonoBehaviour
     Vector2 move;
     private PhotonView photonView;
 
+    //Combat
+    private float health;
+    [SerializeField]
+    public GameObject bullet;
+    public GameObject shootPoint;
+
     void Start()
     {
         photonView = GetComponent<PhotonView>();
@@ -23,6 +29,9 @@ public class PlayerMove : MonoBehaviour
             return;
         }
         acceleration = (accelerationpercent / 100f) * maxWalkSpeed;
+
+        health = 100;
+
         GetComponents();
     }
 
@@ -34,6 +43,7 @@ public class PlayerMove : MonoBehaviour
         }
         RotateSprite();
         UpdateMoveControls();
+        FireWeapon();
     }
 
     private void FixedUpdate()
@@ -46,6 +56,16 @@ public class PlayerMove : MonoBehaviour
     }
 
     #region updates
+
+    void FireWeapon()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            GameObject bullet1 = Instantiate(bullet, shootPoint.transform.position, shootPoint.transform.rotation);
+            bullet1.GetComponent<BulletScript>().Init(shootPoint.transform.up);
+        }
+    }
+
     void RotateSprite()
     {
         // Player can control direction
@@ -107,5 +127,15 @@ public class PlayerMove : MonoBehaviour
         {
             rb = GetComponent<Rigidbody2D>();
         }
+
+        if (bullet == null)
+        {
+            bullet = (GameObject)Resources.Load("prefabs/bullet", typeof(GameObject));
+        }
+    }
+
+    public void TakeDamage(float attackDamage)
+    {
+        health -= attackDamage;
     }
 }
