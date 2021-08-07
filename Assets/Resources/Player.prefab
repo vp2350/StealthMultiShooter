@@ -328,6 +328,7 @@ MonoBehaviour:
   accelerationEnabled: 1
   accelerationpercent: 110
   bullet: {fileID: 4851517164279088467, guid: d001d4fd42b05da498a0152abf6746a4, type: 3}
+  glowStick: {fileID: 3330137523900913225, guid: 19c3e646058fc894f9d455f39215c375, type: 3}
   shootPoint: {fileID: 5647937834467352331}
 --- !u!114 &558760347845696319
 MonoBehaviour:

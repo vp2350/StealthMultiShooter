@@ -14,11 +14,13 @@ public class PlayerMove : MonoBehaviour
     float acceleration, speed;
     Vector2 move;
     private PhotonView photonView;
-
+    int stickCount = 2;
     //Combat
     private float health;
     [SerializeField]
     public GameObject bullet;
+    public GameObject glowStick;
+
     public GameObject shootPoint;
 
     void Start()
@@ -31,7 +33,7 @@ public class PlayerMove : MonoBehaviour
         acceleration = (accelerationpercent / 100f) * maxWalkSpeed;
 
         health = 100;
-
+        stickCount = 2;
         GetComponents();
     }
 
@@ -44,6 +46,7 @@ public class PlayerMove : MonoBehaviour
         RotateSprite();
         UpdateMoveControls();
         FireWeapon();
+        ThrowStick();
     }
 
     private void FixedUpdate()
@@ -65,6 +68,17 @@ public class PlayerMove : MonoBehaviour
             bullet1.GetComponent<BulletScript>().Init(shootPoint.transform.up);
         }
     }
+
+    void ThrowStick()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse1) && stickCount>0)
+        {
+            GameObject stick1 = Instantiate(glowStick, shootPoint.transform.position, shootPoint.transform.rotation);
+            stick1.GetComponent<Rigidbody2D>().AddForce(shootPoint.transform.up * 10, ForceMode2D.Impulse);
+            stickCount--;
+        }
+    }
+
 
     void RotateSprite()
     {
@@ -131,6 +145,11 @@ public class PlayerMove : MonoBehaviour
         if (bullet == null)
         {
             bullet = (GameObject)Resources.Load("prefabs/bullet", typeof(GameObject));
+        }
+
+        if (glowStick == null)
+        {
+            glowStick = (GameObject)Resources.Load("prefabs/Glowstick", typeof(GameObject));
         }
     }
 
