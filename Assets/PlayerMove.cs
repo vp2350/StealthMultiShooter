@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
     private PhotonView photonView;
     int stickCount = 2;
     //Combat
-    private float health;
+    [SerializeField] private float health;
     [SerializeField]
     public GameObject bullet;
     public GameObject glowStick;
