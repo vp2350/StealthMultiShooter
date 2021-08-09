@@ -8,6 +8,7 @@ public class BulletScript : MonoBehaviour
     public float speed;
     public float damage;
 
+    private PhotonView photonView;
     private Rigidbody2D myRigdBody;
     private bool canDamage; //Avoids repeat hits
     private Vector3 forwardVector;
@@ -17,6 +18,7 @@ public class BulletScript : MonoBehaviour
     {
         canDamage = true;
         myRigdBody = GetComponent<Rigidbody2D>();
+        photonView = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
@@ -27,15 +29,20 @@ public class BulletScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //Only happen on our own client
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         if (canDamage)
         {
             canDamage = false; 
             if(collision.collider.tag == "Player")
             {
-                collision.collider.gameObject.GetComponent<PlayerMove>().TakeDamage(damage);
+                collision.collider.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
             }
         }
-        Destroy(this.gameObject);
+        PhotonNetwork.Destroy(photonView);
     }
 
     public void Init(Vector3 forward)

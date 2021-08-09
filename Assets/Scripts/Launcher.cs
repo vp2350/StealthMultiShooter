@@ -50,6 +50,17 @@ public class Launcher : MonoBehaviourPunCallbacks
         //PhotonNetwork.JoinOrCreateRoom("default", new RoomOptions { MaxPlayers = 16 }, null);
     }
 
+    /// <summary>
+    /// Creates custom room property of a random seed when the room is first created
+    /// </summary>
+    public override void OnCreatedRoom()
+    {
+        base.OnCreatedRoom();
+        ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
+        customProperties["RandomSeed"] = (int)System.DateTime.Now.Ticks;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+    }
+
     public override void OnJoinedRoom()
     {
         Debug.Log("Successfully joined room!");

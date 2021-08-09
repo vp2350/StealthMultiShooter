@@ -69,7 +69,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            GameObject bullet1 = Instantiate(bullet, shootPoint.transform.position, shootPoint.transform.rotation);
+            GameObject bullet1 = PhotonNetwork.Instantiate("Bullet", shootPoint.transform.position, shootPoint.transform.rotation);
             bullet1.GetComponent<BulletScript>().Init(shootPoint.transform.up);
         }
     }
@@ -158,6 +158,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    [PunRPC]
     public void TakeDamage(float attackDamage)
     {
         health -= attackDamage;

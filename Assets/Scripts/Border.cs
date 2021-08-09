@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class Border : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class Border : MonoBehaviour
     private Vector2 endPos;
     [SerializeField] private float startScale;
     [SerializeField] private float endScale;
+    private System.Random random;
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +43,10 @@ public class Border : MonoBehaviour
         // Set up the timer state
         pauseTimer = pauseDuration;
         moveTimer = 0;
+
+        //Set up the random
+        //Important to make sure that they are used exactly the same amount of times in the same order to prevent desync
+        random = new System.Random((int)PhotonNetwork.CurrentRoom.CustomProperties["RandomSeed"]);
     }
 
     // Update is called once per frame
@@ -88,9 +94,9 @@ public class Border : MonoBehaviour
 
         // Calculate the target location/scale
         endPos = new Vector2(
-            borderCircle.transform.position.x + Random.Range(-0.5f, 0.5f) * startScale,
-            borderCircle.transform.position.y + Random.Range(-0.5f, 0.5f) * startScale);
-        endScale = (startScale * Random.Range(0.50f, 0.75f)) - 1f;
+            borderCircle.transform.position.x + ((float)random.NextDouble() - 0.5f) * startScale,
+            borderCircle.transform.position.y + ((float)random.NextDouble() - 0.5f) * startScale);
+        endScale = (startScale * (((float)random.NextDouble() * 0.25f) + 0.5f) - 1f);
 
         // Update the timer values
         pauseTimer = 0;
