@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,9 +19,13 @@ public class PlayerMove : MonoBehaviour
     int stickCount = 2;
     //Combat
     [SerializeField] private float health;
-    [SerializeField]
-    public GameObject bullet;
+    [SerializeField] public GameObject bullet;
     public GameObject glowStick;
+
+    // Border
+    private Collider2D thisCollider;
+    private Collider2D borderCollider;
+    private float outsideBorderTimer = 0;
 
     public GameObject shootPoint;
 
@@ -39,6 +44,8 @@ public class PlayerMove : MonoBehaviour
 
         health = 100;
         stickCount = 2;
+        thisCollider = GetComponent<BoxCollider2D>();
+        borderCollider = GameObject.Find("BorderCircle").GetComponent<CircleCollider2D>();
         GetComponents();
     }
 
@@ -52,6 +59,7 @@ public class PlayerMove : MonoBehaviour
         UpdateMoveControls();
         FireWeapon();
         ThrowStick();
+        CheckBorder();
     }
 
     private void FixedUpdate()
@@ -78,12 +86,34 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse1) && stickCount>0)
         {
-            GameObject stick1 = Instantiate(glowStick, shootPoint.transform.position, shootPoint.transform.rotation);
+            GameObject stick1 = PhotonNetwork.Instantiate("Glowstick", shootPoint.transform.position, shootPoint.transform.rotation);
             stick1.GetComponent<Rigidbody2D>().AddForce(shootPoint.transform.up * 10, ForceMode2D.Impulse);
             stickCount--;
         }
     }
 
+    /// <summary>
+    /// Check to determine if the player is colliding with the border
+    /// If so, increment the timer, and take 10 damage for every second outside the border
+    /// </summary>
+    void CheckBorder()
+    {
+        if(thisCollider.IsTouching(borderCollider))
+        {
+            outsideBorderTimer = 0;
+        } 
+        else
+        {
+            // Player is fully outside of the border
+            outsideBorderTimer += Time.deltaTime;
+            if(outsideBorderTimer >= 1f)
+            {
+                // Take 10 damage per second from the border
+                outsideBorderTimer -= 1f;
+                GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, 10f);
+            }
+        }
+    }
 
     void RotateSprite()
     {
@@ -162,5 +192,16 @@ public class PlayerMove : MonoBehaviour
     public void TakeDamage(float attackDamage)
     {
         health -= attackDamage;
+
+        if (health <= 0)
+            KillPlayer();
+    }
+
+    /// <summary>
+    /// When this player's health reaches 0, destroy the player and trigger the end game panel
+    /// </summary>
+    public void KillPlayer()
+    {
+        PhotonNetwork.Destroy(gameObject);
     }
 }
