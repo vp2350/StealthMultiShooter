@@ -11,30 +11,29 @@ public class Launcher : MonoBehaviourPunCallbacks
     public GameObject loadingScreen;
     public GameObject playerCount;
 
-    public GameObject disconnectScreen;
-    public GameObject disconnectCause;
-
     [SerializeField]
     private GameObject playButton;
-
-    private float timer;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Synchronize moving from the lobby room to in-game
         PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.ConnectUsingSettings();
-        timer = 0;
+
+        if (PhotonNetwork.IsConnected)
+        {
+            // Already connected to a lobby
+            // Enable the play button and leave the last game's room
+            playButton.SetActive(true);
+        }
+        else
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     void Update()
     {
-        //timer += Time.deltaTime;
-        //if(timer >= 1f)
-        //{
-        //    timer -= 1f;
-        //    UpdateLobbyPlayerCount();
-        //}
     }
 
     public override void OnConnectedToMaster()
@@ -44,7 +43,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        UpdateLobbyPlayerCount();
         Debug.Log("Connected successfully!");
         playButton.SetActive(true);
         //PhotonNetwork.JoinOrCreateRoom("default", new RoomOptions { MaxPlayers = 16 }, null);
@@ -65,6 +63,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         Debug.Log("Successfully joined room!");
         base.OnJoinedRoom();
+        UpdateLobbyPlayerCount();
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -75,32 +74,23 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        // UpdateLobbyPlayerCount();
         base.OnPlayerEnteredRoom(newPlayer);
+        UpdateLobbyPlayerCount();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        // UpdateLobbyPlayerCount();
         base.OnPlayerLeftRoom(otherPlayer);
+        UpdateLobbyPlayerCount();
     }
 
-    public override void OnDisconnected(DisconnectCause cause)
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        // Set error message
-        disconnectCause.GetComponent<TextMeshProUGUI>().text = cause.ToString();
-
-        // Set disconnect screen as active
-        disconnectScreen.SetActive(true);
-    }
-
-    public void ReturnToMainMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
+        base.OnRoomPropertiesUpdate(propertiesThatChanged);
     }
 
     private void UpdateLobbyPlayerCount()
     {
-        // playerCount.GetComponent<TextMeshProUGUI>().SetText($"({PhotonNetwork.CountOfPlayers}/{PhotonNetwork.CountOfPlayersOnMaster})");
+        playerCount.GetComponent<TextMeshProUGUI>().SetText($"Players in room: {PhotonNetwork.CurrentRoom.PlayerCount}");
     }
 }

@@ -17,6 +17,9 @@ public class CameraScript : MonoBehaviour
 
     void Update()
     {
+        // If the character died, stop trying to update the camera to its position
+        if (character == null)
+            return;
 
         Vector3 target = new Vector3(character.transform.position.x,
                                      character.transform.position.y,

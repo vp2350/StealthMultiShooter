@@ -32,7 +32,11 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         photonView = GetComponent<PhotonView>();
-        if(!photonView.IsMine)
+        
+        // Set the health since all players have access to health info
+        health = 100;
+        
+        if (!photonView.IsMine)
         {
             foreach(GameObject lightmask in lightmasks)
             {
@@ -42,7 +46,6 @@ public class PlayerMove : MonoBehaviour
         }
         acceleration = (accelerationpercent / 100f) * maxWalkSpeed;
 
-        health = 100;
         stickCount = 2;
         thisCollider = GetComponent<BoxCollider2D>();
         borderCollider = GameObject.Find("BorderCircle").GetComponent<CircleCollider2D>();
@@ -202,6 +205,34 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     public void KillPlayer()
     {
-        PhotonNetwork.Destroy(gameObject);
+        if(photonView.IsMine)
+        {
+            PhotonNetwork.Destroy(gameObject);
+            GameObject.Find("GameStateManager").GetComponent<GameStateManager>().ShowLoseScreen();
+        }
+        else
+        {
+            // Not the client's player; are they the last one standing?
+            // Count both the client player and the player that is actively dying
+            if(GameObject.FindGameObjectsWithTag("Player").Length == 2)
+            {
+                GameObject.Find("GameStateManager").GetComponent<GameStateManager>().ShowWinScreen();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Whenever a player dies, check if there is only one player remaining
+    /// </summary>
+    public void OnDestroy()
+    {
+        int counter = 0;
+        GameObject[] objects = GameObject.FindGameObjectsWithTag("Player");
+        foreach(GameObject obj in objects)
+        {
+            counter++;
+        }
+
+        Debug.Log($"Players remaining: {counter}");
     }
 }
