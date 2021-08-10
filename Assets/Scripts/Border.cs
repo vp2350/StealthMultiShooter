@@ -94,8 +94,8 @@ public class Border : MonoBehaviour
 
         // Calculate the target location/scale
         endPos = new Vector2(
-            borderCircle.transform.position.x + ((float)random.NextDouble() - 0.5f) * startScale,
-            borderCircle.transform.position.y + ((float)random.NextDouble() - 0.5f) * startScale);
+            borderCircle.transform.position.x + (((float)random.NextDouble() * 0.5f) - 0.25f) * startScale,
+            borderCircle.transform.position.y + (((float)random.NextDouble() * 0.5f) - 0.25f) * startScale);
         endScale = (startScale * (((float)random.NextDouble() * 0.25f) + 0.5f) - 1f);
 
         // Update the timer values
