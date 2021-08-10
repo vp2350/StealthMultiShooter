@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(PhotonView))]
 public class PlayerMove : MonoBehaviour
@@ -19,6 +20,8 @@ public class PlayerMove : MonoBehaviour
     int stickCount = 2;
     //Combat
     [SerializeField] private float health;
+    private float maxHealth;
+    public GameObject healthBar;
     [SerializeField] public GameObject bullet;
     public GameObject glowStick;
 
@@ -35,6 +38,7 @@ public class PlayerMove : MonoBehaviour
         
         // Set the health since all players have access to health info
         health = 100;
+        maxHealth = 100;
         
         if (!photonView.IsMine)
         {
@@ -198,6 +202,13 @@ public class PlayerMove : MonoBehaviour
 
         if (health <= 0)
             KillPlayer();
+        else
+            UpdateHealthBar();
+    }
+
+    public void UpdateHealthBar()
+    {
+        healthBar.GetComponent<UnityEngine.UI.Image>().fillAmount = health / maxHealth;
     }
 
     /// <summary>
