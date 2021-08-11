@@ -19,12 +19,13 @@ public class BulletScript : MonoBehaviour
         canDamage = true;
         myRigdBody = GetComponent<Rigidbody2D>();
         photonView = GetComponent<PhotonView>();
+        myRigdBody.velocity = (forwardVector * speed);
     }
 
     // Update is called once per frame
     void Update()
     {
-        myRigdBody.MovePosition(transform.position + forwardVector * Time.deltaTime * speed);
+        // myRigdBody.MovePosition(transform.position + forwardVector * Time.deltaTime * speed);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
